@@ -1,5 +1,7 @@
 from uuid import uuid4
+
 from sqlalchemy.orm import Session
+
 from app import models, schemas
 
 DEL_MENU_RESULT = {"status": True, "message": "The menu has been deleted"}
@@ -36,11 +38,11 @@ def get_menu_by_id(db: Session, menu_id: str) -> models.Menu:
 
 
 def patch_menu(
-    db: Session,
-    db_menu: models.Menu,
-    menu: schemas.MenuBase,
+        db: Session,
+        db_menu: models.Menu,
+        menu: schemas.MenuBase,
 ) -> models.Menu:
-    update_data = menu.dict(exclude_unset=True)
+    update_data = menu.model_dump(exclude_unset=True)
     update_object(data=update_data, obj=db_menu, db=db)
     return db_menu
 
@@ -58,9 +60,9 @@ def get_submenu_by_title(db: Session, title: str) -> models.SubMenu:
 
 
 def get_submenu_by_id(
-    db: Session,
-    menu: models.Menu,
-    submenu_id: str,
+        db: Session,
+        menu: models.Menu,
+        submenu_id: str,
 ) -> models.SubMenu | None:
     db_submenu = db.get(models.SubMenu, submenu_id)
     if db_submenu and db_submenu.menu_id == menu.id:
@@ -73,9 +75,9 @@ def get_all_submenu(db_menu: models.Menu) -> list[models.SubMenu]:
 
 
 def create_submenu(
-    db: Session,
-    db_menu: models.Menu,
-    submenu: schemas.SubMenuCreate,
+        db: Session,
+        db_menu: models.Menu,
+        submenu: schemas.SubMenuCreate,
 ) -> models.SubMenu:
     id_submenu = str(uuid4())
     db_submenu = models.SubMenu(
@@ -92,18 +94,18 @@ def create_submenu(
 
 
 def patch_submenu(
-    db: Session,
-    db_submenu: models.SubMenu,
-    submenu: schemas.MenuBase,
+        db: Session,
+        db_submenu: models.SubMenu,
+        submenu: schemas.MenuBase,
 ) -> models.SubMenu:
-    update_data = submenu.dict(exclude_unset=True)
+    update_data = submenu.model_dump(exclude_unset=True)
     update_object(data=update_data, obj=db_submenu, db=db)
     return db_submenu
 
 
 def delete_submenu(
-    db: Session,
-    db_submenu: models.SubMenu,
+        db: Session,
+        db_submenu: models.SubMenu,
 ) -> dict[str, object]:
     db_submenu.menu.dishes_count -= db_submenu.dishes_count
     db_submenu.menu.submenus_count -= 1
@@ -124,9 +126,9 @@ def get_all_dish(db_submenu: models.SubMenu) -> list[models.Dish]:
 
 
 def get_dish_by_title(
-    db: Session,
-    db_submenu: models.SubMenu,
-    title: str,
+        db: Session,
+        db_submenu: models.SubMenu,
+        title: str,
 ) -> models.Dish:
     return (
         db.query(models.Dish)
@@ -136,9 +138,9 @@ def get_dish_by_title(
 
 
 def create_dish(
-    db: Session,
-    db_submenu: models.SubMenu,
-    dish: schemas.DishCreate,
+        db: Session,
+        db_submenu: models.SubMenu,
+        dish: schemas.DishCreate,
 ) -> models.Dish:
     id_dish = str(uuid4())
     db_dish = models.Dish(
@@ -157,9 +159,9 @@ def create_dish(
 
 
 def get_dish_by_id(
-    db: Session,
-    submenu: models.SubMenu,
-    dish_id: str,
+        db: Session,
+        submenu: models.SubMenu,
+        dish_id: str,
 ) -> models.Dish | None:
     db_dish = db.get(models.Dish, dish_id)
     if db_dish and db_dish.submenu_id == submenu.id:
@@ -168,11 +170,11 @@ def get_dish_by_id(
 
 
 def patch_dish(
-    db: Session,
-    db_dish: models.Dish,
-    dish: schemas.DishBase,
+        db: Session,
+        db_dish: models.Dish,
+        dish: schemas.DishBase,
 ) -> models.Dish:
-    update_data = dish.dict(exclude_unset=True)
+    update_data = dish.model_dump(exclude_unset=True)
     update_object(data=update_data, obj=db_dish, db=db)
     return db_dish
 

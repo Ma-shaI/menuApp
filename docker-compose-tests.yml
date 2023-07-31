@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  server_test:
+    container_name: test_menu_server
+    build: .
+    command: >
+      sh -c "cd app &&
+            pytest -vv &&
+            cd .. &&
+            uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 9000"
+    volumes:
+      - ./:/app/
+    environment:
+      - CONFIG_FILE=../.env_test
+    env_file:
+      - ./.env_test
+    ports:
+      - "9000:9000"
+    depends_on:
+      test_menu_db:
+        condition: service_healthy
+
+    networks:
+      - menu_test
+
+  test_menu_db:
+    container_name: test_menu_db
+    image: postgres:15.1-alpine
+    env_file:
+      - .env_test
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 1s
+      timeout: 3s
+      retries: 10
+    networks:
+      - menu_test
+
+
+networks:
+  menu_test:
+    name: menu_test

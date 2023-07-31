@@ -1,10 +1,12 @@
-python==3.10.7
 alembic==1.11.1
 fastapi==0.100.0
 httpx==0.24.1
-psycopg2==2.9.6
+psycopg2-binary==2.9.6
 pydantic==2.0.3
 python-dotenv==1.0.0
 SQLAlchemy==2.0.19
 uvicorn==0.23.1
 python-dotenv==1.0.0
+pytest==7.2.1
+sqlalchemy_utils==0.41.1
+pre-commit==3.0.4

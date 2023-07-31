@@ -1,19 +1,26 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), "../.env")
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
+config_file = os.getenv("CONFIG_FILE", "../.env_prod")
+dotenv_path = os.path.join(os.path.dirname(__file__), config_file)
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 
 class Settings:
-    DB_HOST = os.environ.get("DB_HOST")
-    DB_PORT = os.environ.get("DB_PORT")
-    DB_NAME = os.environ.get("DB_NAME")
-    DB_USER = os.environ.get("DB_USER")
-    DB_PASS = os.environ.get("DB_PASS")
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "password")
+    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "db")
+    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
+    POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres")
 
     DATABASE_URL = (
-        f"postgresql://{DB_USER}:{DB_PASS}"
-        f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+        f"@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
     )
 
 
