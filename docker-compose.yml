@@ -5,20 +5,19 @@ services:
     container_name: menu_server
     build: .
     restart: always
-    entrypoint: bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    command: "uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000"
     volumes:
       - ./:/app/
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_HOST=menu_db
+      - CONFIG_FILE=../.env_prod
     env_file:
       - ./.env_prod
     ports:
       - "8000:8000"
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   db:
@@ -28,18 +27,22 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env_prod
-
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - POSTGRES_DB=${DB_NAME}
-    expose:
-      - 5432
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 10s
-      retries: 100
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 1s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    container_name: menu_redis
+    image: redis:latest
+    env_file:
+      - .env_prod
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 10
 
 volumes:
-  postgres_data:
+    postgres_data:

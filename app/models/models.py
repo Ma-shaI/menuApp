@@ -1,11 +1,11 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from app.database import Base
+from app.db.session import Base
 
 
-class Menu(Base):
-    __tablename__ = "menus"
+class MenuModel(Base):
+    __tablename__ = 'menus'
     id = Column(String, primary_key=True, unique=True)
     title = Column(String, index=True, nullable=False)
     description = Column(String)
@@ -13,34 +13,34 @@ class Menu(Base):
     dishes_count = Column(Integer, default=0)
 
     submenu = relationship(
-        "SubMenu",
-        cascade="all, delete",
-        back_populates="menu",
+        'SubMenuModel',
+        cascade='all, delete',
+        back_populates='menu',
     )
 
 
-class SubMenu(Base):
-    __tablename__ = "submenus"
+class SubMenuModel(Base):
+    __tablename__ = 'submenus'
     id = Column(String, primary_key=True, unique=True)
     title = Column(String, index=True, nullable=False)
     description = Column(String)
     dishes_count = Column(Integer, default=0)
-    menu_id = Column(String, ForeignKey("menus.id"))
+    menu_id = Column(String, ForeignKey('menus.id'))
 
-    menu = relationship("Menu", back_populates="submenu")
+    menu = relationship('MenuModel', back_populates='submenu')
     dish = relationship(
-        "Dish",
-        cascade="all, delete",
-        back_populates="submenu",
+        'DishModel',
+        cascade='all, delete',
+        back_populates='submenu',
     )
 
 
-class Dish(Base):
-    __tablename__ = "dishes"
+class DishModel(Base):
+    __tablename__ = 'dishes'
     id = Column(String, primary_key=True, unique=True)
     title = Column(String, index=True, nullable=False)
     description = Column(String)
     price = Column(String, nullable=False)
-    submenu_id = Column(String, ForeignKey("submenus.id"))
+    submenu_id = Column(String, ForeignKey('submenus.id'))
 
-    submenu = relationship("SubMenu", back_populates="dish")
+    submenu = relationship('SubMenuModel', back_populates='dish')

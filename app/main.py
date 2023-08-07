@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.api.api_v1 import menu
+
+from app.api.api_v1 import api
 
 app = FastAPI()
 
-app.include_router(menu.router, prefix="/api/v1/menus")
+app.include_router(api.api_router, prefix='/api/v1/menus')
