@@ -10,9 +10,7 @@ DEL_MENU_RESULT = {'status': True, 'message': 'The menu has been deleted'}
 
 def get_all_menu(db: Session) -> list[MenuModel]:
     menus = db.query(MenuModel).all()
-    if menus:
-        return menus
-    return []
+    return menus
 
 
 def create_menu(db: Session, menu: MenuCreate) -> MenuModel:
